@@ -89,12 +89,34 @@ func (s *RoomService) AddClientToRoom(c *websocket.Conn) {
 		room.Owner = c
 		c.WriteJSON(fiber.Map{
 			"isOwner": true,
+			"room":    room,
 		})
 	} else {
 		room.WsClients[c] = true
+		c.WriteJSON(fiber.Map{
+			"room": room,
+		})
 	}
 	for {
 		_, _, err := c.ReadMessage()
+		// if message contains "isPlaying", set room.IsPlaying to true
+
+		var message map[string]interface{}
+		err = c.ReadJSON(&message)
+
+		if message["isPlaying"] != nil {
+			room.IsPlaying = message["isPlaying"].(bool)
+		}
+		// broadcast room to all clients
+		for client := range room.WsClients {
+			err = client.WriteJSON(fiber.Map{
+				"room": room,
+			})
+		}
+		room.Owner.WriteJSON(fiber.Map{
+			"room": room,
+		})
+
 		if err != nil {
 			return
 		}

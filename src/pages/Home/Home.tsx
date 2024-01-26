@@ -16,7 +16,7 @@ interface Props {}
 export const Home = ({}: Props): JSX.Element => {
   const [url, setUrl] = useState("");
   const [isUrlValid, setIsUrlValid] = useState(true);
-  const handleChangeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleYoutubeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsUrlValid(true);
     setUrl(e.target.value);
   };
@@ -29,7 +29,7 @@ export const Home = ({}: Props): JSX.Element => {
     setIsUrlValid(true);
     // Requêter un utilisateur avec un ID donné.
 
-    const roomId = await createRoom(url);
+    const roomId = await createRoom(url.split("v=")[1]);
 
     navigate(`/room/${roomId}`);
   };
@@ -44,7 +44,7 @@ export const Home = ({}: Props): JSX.Element => {
         <div className="flex w-full max-w-sm items-center space-x-2">
           <Input
             value={url}
-            onChange={handleChangeUrl}
+            onChange={handleYoutubeUrl}
             placeholder="paste your youtube link here"
           />
           <Tooltip open={!isUrlValid}>

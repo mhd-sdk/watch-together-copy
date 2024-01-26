@@ -1,4 +1,3 @@
-import { useRoom } from "@/hooks/useRoom";
 import { ReactNode, createContext, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
@@ -25,7 +24,12 @@ interface Props {
 }
 const RoomProvider = ({ children }: Props) => {
   const [isOwner, setIsOwner] = useState<boolean>(false);
-  const [room, setRoom] = useState<Room>();
+  const [room, setRoom] = useState<Room>({
+    id: "",
+    users: [],
+    current_youtube_video: "",
+    is_playing: false,
+  });
   const roomId = window.location.pathname.split("/")[2];
   const { sendMessage } = useWebSocket(
     `ws://localhost:3000/ws/room/${roomId}`,
@@ -38,6 +42,11 @@ const RoomProvider = ({ children }: Props) => {
         const isOwnerFromWs = JSON.parse(message.data).isOwner;
         if (isOwnerFromWs) {
           setIsOwner(isOwnerFromWs);
+        }
+        const roomFromWS = JSON.parse(message.data).room;
+        if (roomFromWS) {
+          console.log("data", JSON.parse(message.data));
+          setRoom(roomFromWS);
         }
       },
     },
@@ -55,6 +64,7 @@ const RoomProvider = ({ children }: Props) => {
       return;
     }
     setRoom({ ...room, is_playing: isPlaying });
+    sendMessage(JSON.stringify({ isPlaying: isPlaying }));
   };
 
   return (

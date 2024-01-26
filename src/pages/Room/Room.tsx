@@ -7,9 +7,17 @@ import { Options } from "youtube-player/dist/types";
 interface Props {}
 
 export const Room = ({}: Props): JSX.Element => {
-  const { room, isOwner, onChangeIsPlaying, onChangeUrl } = useRoom();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { room, isOwner, onChangeIsPlaying } = useRoom();
+
   const youtubePlayer = useRef<YouTubePlayer>();
+
+  const handlePlay = () => {
+    onChangeIsPlaying(true);
+  };
+
+  const handlePause = () => {
+    onChangeIsPlaying(false);
+  };
 
   const onPlayerReady = (event: YouTubeEvent) => {
     if (!event) {
@@ -22,29 +30,23 @@ export const Room = ({}: Props): JSX.Element => {
       controls: isOwner ? undefined : 0,
     },
   };
-  const togglePlayback = () => {
-    if (isPlaying && youtubePlayer) {
-      youtubePlayer.current?.pauseVideo();
-      setIsPlaying(false);
-    } else {
-      youtubePlayer.current?.playVideo();
-      setIsPlaying(true);
-    }
-  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.youtubeWrapper}>
+        {isOwner && "you are the owner"}
+        --
+        {room?.current_youtube_video}
         <YouTube
           onReady={onPlayerReady}
-          videoId={"NxxW1AqoMmE"}
+          videoId={room?.current_youtube_video}
           opts={opts}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-          onEnd={() => setIsPlaying(false)}
+          onPlay={handlePlay}
+          onPause={handlePause}
         />
-        <div className={styles.overlay} onClick={togglePlayback}></div>
+        {room?.is_playing ? "isPlaying" : "isNotPlaying"}
+        {!isOwner && <div className={styles.overlay} />}
       </div>
-      <button onClick={togglePlayback}>{isPlaying ? "Pause" : "Play"}</button>
     </div>
   );
 };
@@ -53,8 +55,8 @@ const styles = {
   wrapper: css``,
   youtubeWrapper: css`
     position: relative;
-    width: 640px; /* Same as YouTube player width */
-    height: 390px; /* Same as YouTube player height */
+    width: 640px;
+    height: 390px;
   `,
   overlay: css`
     position: absolute;
