@@ -1,15 +1,14 @@
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import imageurl from "../../resources/home-image.png";
 import { css } from "@emotion/css";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import axios from "axios";
 import { createRoom } from "@/api/room";
 interface Props {}
 
@@ -20,18 +19,20 @@ export const Home = ({}: Props): JSX.Element => {
     setIsUrlValid(true);
     setUrl(e.target.value);
   };
-  const navigate = useNavigate();
+  const handleNavigate = (path: string) => {
+    window.location.href = path;
+  };
   const handleSubmit = async () => {
     if (!url.includes("youtube.com") || url.length === 0) {
       setIsUrlValid(false);
       return;
     }
     setIsUrlValid(true);
-    // Requêter un utilisateur avec un ID donné.
 
     const roomId = await createRoom(url.split("v=")[1]);
-
-    navigate(`/room/${roomId}`);
+    setTimeout(() => {
+      handleNavigate(`/room/${roomId}`);
+    }, 1000);
   };
   return (
     <div id="home-wrapper" className={styles.wrapper}>
@@ -46,6 +47,9 @@ export const Home = ({}: Props): JSX.Element => {
             value={url}
             onChange={handleYoutubeUrl}
             placeholder="paste your youtube link here"
+            className={css`
+              width: 300px;
+            `}
           />
           <Tooltip open={!isUrlValid}>
             <TooltipTrigger asChild>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -11,12 +12,20 @@ import {
 } from "@/components/ui/navigation-menu";
 import { css } from "@emotion/css";
 import { Button } from "../ui/button";
-import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { CopyIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import { Input } from "../ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export const Navbar = () => {
+export const RoomNavbar = () => {
   const root = window.document.documentElement;
-
-  const [isDark, setIsDark] = React.useState(root.classList.contains("dark"));
+  const handleNavigate = (path: string) => {
+    window.location.href = path;
+  };
+  const [isDark, setIsDark] = useState(root.classList.contains("dark"));
   const handleSwitchTheme = (isDark: boolean) => {
     if (isDark) {
       root.classList.add("dark");
@@ -30,44 +39,47 @@ export const Navbar = () => {
     setIsDark(isDark);
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(window.location.href);
+  };
+
   return (
     <div
       className={css`
         display: flex;
         gap: 4px;
-        flex-direction: row;
       `}
     >
-      <NavigationMenu className={css``}>
-        <NavigationMenuList className={css``}>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>About the project</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className=" gap-3 p-4 md:w-[200px] lg:w-[400px] lg:grid-cols-[.75fr_1fr]">
-                <ListItem href="https://w2g.tv/fr/" title="Inspiration">
-                  This project is inspired by Watch Together
-                </ListItem>
-                <ListItem
-                  href="https://github.com/mhd-sdk/watch-together-copy.git"
-                  title="Open source"
-                >
-                  This project is open source, you can contribute to it on
-                  GitHub
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-      <div
+      <Button onClick={() => handleNavigate("/")} variant="ghost">
+        Quit room
+      </Button>
+
+      <Input
+        className={css`
+          width: 300px;
+        `}
+        value={window.location.href}
+      />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button onClick={handleCopy} variant="ghost">
+            <CopyIcon />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Copy link to clipboard</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Button
         className={css`
           margin-left: auto;
         `}
+        onClick={() => handleSwitchTheme(!isDark)}
+        variant="ghost"
       >
-        <Button onClick={() => handleSwitchTheme(!isDark)} variant="ghost">
-          {isDark ? <MoonIcon /> : <SunIcon />}
-        </Button>
-      </div>
+        {isDark ? <MoonIcon /> : <SunIcon />}
+      </Button>
     </div>
   );
 };

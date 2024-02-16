@@ -18,9 +18,10 @@ func main() {
 	app.Use(cors.New())
 	roomService := room.NewRoomService()
 
-	app.Post("/room/:yturl", handlers.HandleNewRoom(roomService))
+	app.Post("/room/", handlers.HandleNewRoom(roomService))
 	app.Get("/room/:id", handlers.HandleGetRoom(roomService))
 	app.Get("/room/:id/play", handlers.HandleGetRoom(roomService))
+	app.Post("/room/:id/checkuniqname/", handlers.HandleCheckName(roomService))
 	app.Get("/rooms", handlers.HandleGetRooms(roomService))
 
 	app.Get("/ws/room/:roomID", handlers.ConnectUserToRoom(roomService))

@@ -1,12 +1,15 @@
 import { css } from "@emotion/css";
 import { Home } from "./pages/Home/Home";
 import { Room } from "./pages/Room/Room";
-import { Navbar } from "./components/navbar/Navbar";
+import { Navbar } from "./components/Navbar/Navbar";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RoomProvider from "./components/RoomProvider/RoomProvider";
+import { RoomNavbar } from "./components/RoomNavbar/RoomNavbar";
+import { Toaster } from "@/components/ui/sonner";
 
 const App = () => {
+  const pathName = window.location.pathname;
   const router = createBrowserRouter([
     {
       path: "/",
@@ -21,10 +24,12 @@ const App = () => {
       ),
     },
   ]);
+
   return (
     <TooltipProvider>
       <div className={styles.wrapper}>
-        <Navbar />
+        {pathName === "/" && <Navbar />}
+        {pathName.includes("room") && <RoomNavbar />}
         <RouterProvider router={router} />
       </div>
     </TooltipProvider>

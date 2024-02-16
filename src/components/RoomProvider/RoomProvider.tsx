@@ -1,11 +1,16 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 
-interface Room {
+interface user {
+  name: string;
+}
+export interface Room {
   id: string;
-  users: [];
-  current_youtube_video: string;
-  is_playing: boolean;
+  users: Array<user>;
+  owner: user;
+  youtubeVideoId: string;
+  isPlaying: boolean;
+  progress: number;
 }
 
 export interface RoomContextProps {
@@ -13,6 +18,8 @@ export interface RoomContextProps {
   isOwner: boolean;
   onChangeUrl: (newUrl: string) => void;
   onChangeIsPlaying: (isPlaying: boolean) => void;
+  onProgress: (progress: number) => void;
+  onChangeName: (name: string) => void;
 }
 
 export const roomContext = createContext<RoomContextProps | undefined>(
@@ -27,8 +34,10 @@ const RoomProvider = ({ children }: Props) => {
   const [room, setRoom] = useState<Room>({
     id: "",
     users: [],
-    current_youtube_video: "",
-    is_playing: false,
+    youtubeVideoId: "",
+    isPlaying: false,
+    progress: 0,
+    owner: { name: "" },
   });
   const roomId = window.location.pathname.split("/")[2];
   const { sendMessage } = useWebSocket(
@@ -45,35 +54,50 @@ const RoomProvider = ({ children }: Props) => {
         }
         const roomFromWS = JSON.parse(message.data).room;
         if (roomFromWS) {
-          console.log("data", JSON.parse(message.data));
+          console.log("room updated", roomFromWS);
           setRoom(roomFromWS);
         }
       },
     },
   );
 
-  const handleChangeUrl = (newUrl: string) => {
-    if (!room) {
+  const handleChangeYtbID = (newUrl: string) => {
+    if (!room || !isOwner) {
       return;
     }
-    setRoom({ ...room, current_youtube_video: newUrl });
+    setRoom({ ...room, youtubeVideoId: newUrl });
   };
 
   const handleChangeIsPlaying = (isPlaying: boolean) => {
+    if (!room || !isOwner) {
+      return;
+    }
+    setRoom({ ...room, isPlaying });
+    sendMessage(JSON.stringify({ actionType: "changeIsPlaying", isPlaying }));
+  };
+
+  const handleOnProgress = (progress: number) => {
+    if (!room || !isOwner) {
+      return;
+    }
+    setRoom({ ...room, progress: progress });
+    sendMessage(JSON.stringify({ actionType: "onProgress", progress }));
+  };
+  const handleChangeName = (name: string) => {
     if (!room) {
       return;
     }
-    setRoom({ ...room, is_playing: isPlaying });
-    sendMessage(JSON.stringify({ isPlaying: isPlaying }));
+    sendMessage(JSON.stringify({ actionType: "changeName", name }));
   };
-
   return (
     <roomContext.Provider
       value={{
-        room: room,
-        isOwner: isOwner,
-        onChangeUrl: handleChangeUrl,
+        room,
+        isOwner,
+        onChangeUrl: handleChangeYtbID,
         onChangeIsPlaying: handleChangeIsPlaying,
+        onProgress: handleOnProgress,
+        onChangeName: handleChangeName,
       }}
     >
       {children}
