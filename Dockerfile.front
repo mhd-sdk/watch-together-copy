@@ -1,0 +1,19 @@
+# Étape de build
+FROM node:20 AS build
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+COPY . .
+
+# Installer pnpm
+RUN npm install -g pnpm
+
+# Installer les dépendances
+RUN pnpm install
+
+
+EXPOSE 5173
+
+# Commande pour démarrer 
+CMD ["pnpm", "run", "dev", "--host"]

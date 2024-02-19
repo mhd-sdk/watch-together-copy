@@ -2,14 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { NavigationMenuLink } from "@/components/ui/navigation-menu";
 import { css } from "@emotion/css";
 import { Button } from "../ui/button";
 import { CopyIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";

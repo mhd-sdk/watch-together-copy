@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: Room Service API
+  description: API for managing rooms and users in a websocket-based application.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Development server
+paths:
+  /room/:
+    post:
+      summary: Create a new room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewRoomRequestBody'
+      responses:
+        '200':
+          description: Room created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomResponse'
+  /room/{id}:
+    get:
+      summary: Retrieve a room by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomResponse'
+  /room/{id}/checkuniqname/:
+    post:
+      summary: Check if a username is unique within a room
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckNameBody'
+      responses:
+        '200':
+          description: Name availability status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /rooms:
+    get:
+      summary: Retrieve all rooms
+      responses:
+        '200':
+          description: Rooms retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+components:
+  schemas:
+    NewRoomRequestBody:
+      type: object
+      required:
+        - youtubeUrl
+      properties:
+        youtubeUrl:
+          type: string
+    CheckNameBody:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    RoomResponse:
+      type: object
+      properties:
+        room:
+          $ref: '#/components/schemas/Room'
+        message:
+          type: string
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+        owner:
+          $ref: '#/components/schemas/User'
+        youtubeVideoId:
+          type: string
+        isPlaying:
+          type: boolean
+        progress:
+          type: number
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        name:
+          type: string

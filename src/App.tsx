@@ -6,7 +6,6 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RoomProvider from "./components/RoomProvider/RoomProvider";
 import { RoomNavbar } from "./components/RoomNavbar/RoomNavbar";
-import { Toaster } from "@/components/ui/sonner";
 
 const App = () => {
   const pathName = window.location.pathname;

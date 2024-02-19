@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import imageurl from "../../resources/home-image.png";
 import { css } from "@emotion/css";

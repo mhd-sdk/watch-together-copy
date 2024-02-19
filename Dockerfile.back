@@ -1,0 +1,29 @@
+# Définir l'image de base pour Go
+FROM golang:1.21 AS builder
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers du projet Go
+COPY . .
+
+# Télécharger les dépendances
+RUN go mod tidy
+
+# Compiler l'application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+# Étape finale, définir l'image d'exécution
+FROM alpine:latest  
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Copier l'exécutable depuis l'étape de build
+COPY --from=builder /app/main .
+
+# Exposer le port utilisé par l'application
+EXPOSE 3000
+
+# Commande pour lancer l'application
+CMD ["./main"]
