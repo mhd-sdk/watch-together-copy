@@ -29,6 +29,7 @@ func HandleNewRoom(roomService *room.RoomService) fiber.Handler {
 }
 
 func HandleGetRoom(roomService *room.RoomService) fiber.Handler {
+
 	return func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		room, err := roomService.GetRoom(id)

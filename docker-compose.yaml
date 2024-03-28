@@ -16,3 +16,13 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+
+  database:
+       image: 'mariadb:10.3'
+       container_name: database
+       restart: always
+       environment:
+          MYSQL_USER: backend
+          MYSQL_PASSWORD: 123poi
+          MYSQL_DATABASE: my_database
+          MYSQL_ROOT_PASSWORD: rootpassword
